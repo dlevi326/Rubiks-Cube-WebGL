@@ -134,7 +134,7 @@ window.onload = function init()
     canvas.addEventListener("mouseout", mouseUp, false);
     canvas.addEventListener("mousemove", mouseMove, false);
 
-    document.getElementById( "xButton" ).onclick = function () {
+    /*document.getElementById( "xButton" ).onclick = function () {
         if(!isMoving){
             cachedMoves.push("FC");
         }
@@ -143,6 +143,39 @@ window.onload = function init()
     };
     document.getElementById( "yButton" ).onclick = function () {
         cachedMoves.push("MC");
+    };*/
+
+
+
+    document.getElementById("Red Center").onclick = function(){
+        if(!isMoving){
+            cachedMoves.push("TC");
+        }
+    };
+    document.getElementById("Yellow Center").onclick = function(){
+        if(!isMoving){
+            cachedMoves.push("BC");
+        }
+    };
+    document.getElementById("Blue Center").onclick = function(){
+        if(!isMoving){
+            cachedMoves.push("LC");
+        }
+    };
+    document.getElementById("Gray Center").onclick = function(){
+        if(!isMoving){
+            cachedMoves.push("FC");
+        }
+    };
+    document.getElementById("Green Center").onclick = function(){
+        if(!isMoving){
+            cachedMoves.push("RC");
+        }
+    };
+    document.getElementById("Magenta Center").onclick = function(){
+        if(!isMoving){
+            cachedMoves.push("BotC");
+        }
     };
 
     /*canvas.addEventListener( 'mousedown', moveMouseStart, false );
@@ -215,16 +248,6 @@ function generateSmallCube(colorVect){
 var size = 0.1;
 function quad(a, b, c, d, color)
 {
-    var vertices = [
-        vec4( -0.5, -0.5,  0.5, 1.0 ),
-        vec4( -0.5,  0.5,  0.5, 1.0 ),
-        vec4(  0.5,  0.5,  0.5, 1.0 ),
-        vec4(  0.5, -0.5,  0.5, 1.0 ),
-        vec4( -0.5, -0.5, -0.5, 1.0 ),
-        vec4( -0.5,  0.5, -0.5, 1.0 ),
-        vec4(  0.5,  0.5, -0.5, 1.0 ),
-        vec4(  0.5, -0.5, -0.5, 1.0 )
-    ];
 
     var vertices = [
         vec4( -size, -size,  size, 1.0 ),
@@ -309,14 +332,144 @@ var translations = [
     translate(dist,-dist,dist)
 ]
 
-var numFrames = 90;
+var numFrames = 9;
 var curFrameCount = 0;
+var cubeCount=0;
+
+
+
 function checkCache(model,i){
     
     var modelNew = model;
     if(cachedMoves[0]){
         switch(cachedMoves[0]){
-            case "FC":
+            case "TC":
+                if(i==cubeNames.indexOf("FTL") || i==cubeNames.indexOf("FTC") || i==cubeNames.indexOf("FTR") ||
+                    i==cubeNames.indexOf("MTL") || i==cubeNames.indexOf("MTC") || i==cubeNames.indexOf("MTR") ||
+                    i==cubeNames.indexOf("BTL") || i==cubeNames.indexOf("BTC") || i==cubeNames.indexOf("BTR")){
+                
+                    modelNew = mult(rotateY(90/numFrames),modelNew);
+
+                    
+                    if(curFrameCount>=numFrames-1 && cubeCount>=9){
+                        //console.log(cubeNames)
+                        /*var temp0 = cubeNames[0];
+                        var temp1 = cubeNames[1];
+                        var temp9 = cubeNames[9];
+                        var temp18 = cubeNames[18];
+                        
+
+                        cubeNames[0] = cubeNames[2];
+                        cubeNames[1] = cubeNames[11];
+                        cubeNames[2] = cubeNames[20];
+                        cubeNames[9] = temp1;
+                        cubeNames[11] = cubeNames[19];
+                        cubeNames[18] = temp0;
+                        cubeNames[19] = temp9;
+                        cubeNames[20] = temp18;*/
+
+                        // Indexes of all cubes on the face
+                        var FTL = cubeNames.indexOf("FTL"); 
+                        var FTC = cubeNames.indexOf("FTC");
+                        var FTR = cubeNames.indexOf("FTR");
+                        var MTL = cubeNames.indexOf("MTL");
+                        var MTR = cubeNames.indexOf("MTR");
+                        var BTL = cubeNames.indexOf("BTL");
+                        var BTC = cubeNames.indexOf("BTC");
+                        var BTR = cubeNames.indexOf("BTR");
+
+                        var tempFTC = cubeNames[FTC];
+                        var tempFTL = cubeNames[FTL];
+                        var tempMTL = cubeNames[MTL];
+                        var tempBTL = cubeNames[BTL]
+
+                        cubeNames[FTL] = cubeNames[FTR];
+                        cubeNames[FTC] = cubeNames[MTR];
+                        cubeNames[FTR] = cubeNames[BTR];
+                        cubeNames[MTL] = tempFTC;
+                        cubeNames[MTR] = cubeNames[BTC];
+                        cubeNames[BTL] = tempFTL;
+                        cubeNames[BTC] = tempMTL;
+                        cubeNames[BTR] = tempBTL;
+
+                        console.log(cubeNames)
+
+                        cubeCount=0;
+                    }
+                    cubeCount+=1
+
+                }
+                else{
+                    modelNew = model;
+                }
+                break;
+
+            case "BC":
+                if(i==cubeNames.indexOf("BBL") || i==cubeNames.indexOf("BBC") || i==cubeNames.indexOf("BBR") ||
+                    i==cubeNames.indexOf("BML") || i==cubeNames.indexOf("BMC") || i==cubeNames.indexOf("BMR") ||
+                    i==cubeNames.indexOf("BTL") || i==cubeNames.indexOf("BTC") || i==cubeNames.indexOf("BTR")){
+                
+                    modelNew = mult(rotateZ(90/numFrames),modelNew);
+
+                    if(curFrameCount>=numFrames-1 && cubeCount>=9){
+                        //console.log(cubeNames)
+                        /*var temp18 = cubeNames[18];
+                        var temp19 = cubeNames[19];
+                        var temp21 = cubeNames[21];
+                        var temp24 = cubeNames[24];
+                        
+
+                        cubeNames[18] = cubeNames[20];
+                        cubeNames[19] = cubeNames[23];
+                        cubeNames[20] = cubeNames[26];
+                        cubeNames[21] = temp19;
+                        cubeNames[23] = cubeNames[25];
+                        cubeNames[24] = temp18;
+                        cubeNames[25] = temp21;
+                        cubeNames[26] = temp24;*/
+
+                        // Indexes of all cubes on the face
+                        var BTL = cubeNames.indexOf("BTL"); 
+                        var BTC = cubeNames.indexOf("BTC");
+                        var BTR = cubeNames.indexOf("BTR");
+                        var BML = cubeNames.indexOf("BML");
+                        var BMR = cubeNames.indexOf("BMR");
+                        var BBL = cubeNames.indexOf("BBL");
+                        var BBC = cubeNames.indexOf("BBC");
+                        var BBR = cubeNames.indexOf("BBR");
+
+                        var tempBTC = cubeNames[BTC];
+                        var tempBTL = cubeNames[BTL];
+                        var tempBML = cubeNames[BML];
+                        var tempBBL = cubeNames[BBL]
+
+                        cubeNames[BTL] = cubeNames[BTR];
+                        cubeNames[BTC] = cubeNames[BMR];
+                        cubeNames[BTR] = cubeNames[BBR];
+                        cubeNames[BML] = tempBTC;
+                        cubeNames[BMR] = cubeNames[BBC];
+                        cubeNames[BBL] = tempBTL;
+                        cubeNames[BBC] = tempBML;
+                        cubeNames[BBR] = tempBBL;
+
+                        console.log(cubeNames)
+
+                        cubeCount = 0;
+                    }
+
+                    cubeCount+=1
+
+                    
+                }
+                else{
+                    modelNew = model;
+                }
+                break;
+
+
+
+
+            /*case "FC":
                 if(i==cubeNames.indexOf("FTL") || i==cubeNames.indexOf("FTC") || i==cubeNames.indexOf("FTR") ||
                     i==cubeNames.indexOf("FML") || i==cubeNames.indexOf("FMC") || i==cubeNames.indexOf("FMR") ||
                     i==cubeNames.indexOf("FBL") || i==cubeNames.indexOf("FBC") || i==cubeNames.indexOf("FBR")){
@@ -331,12 +484,12 @@ function checkCache(model,i){
                 if(i==cubeNames.indexOf("MTL") || i==cubeNames.indexOf("MTC") || i==cubeNames.indexOf("MTR") ||
                     i==cubeNames.indexOf("MML") || i==cubeNames.indexOf("MMC") || i==cubeNames.indexOf("MMR") ||
                     i==cubeNames.indexOf("MBL") || i==cubeNames.indexOf("MBC") || i==cubeNames.indexOf("MBR")){
-                    modelNew = mult(model,translate(.1,0,0));
+                    //modelNew = mult(model,translate(.1,0,0));
                 }
                 else{
                     modelNew = model;
                 }
-                break;
+                break;*/
             default:
                 modelNew = model
         }
@@ -403,7 +556,6 @@ function render()
     for(var i=0;i<rubiksCubePoints.length;i++){
         trans[i] = checkCache(trans[i],i);
         modelMatrixNew = mult(modelMatrix, trans[i]);
-        modelMatrixNew = checkCache(modelMatrixNew);
         gl.uniformMatrix4fv(modelMatrixLoc, false, flatten(modelMatrixNew));
 
         
@@ -424,7 +576,7 @@ function render()
     }
 
     if(curFrameCount<numFrames-1 && cachedMoves[0]){
-        console.log(curFrameCount);
+        //console.log(curFrameCount);
         curFrameCount+=1;
         isMoving = true;
     }
