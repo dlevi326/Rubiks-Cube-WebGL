@@ -1,7 +1,7 @@
 // TODO
-// - Create individual cubes
-// - Figure out translations
-// - Figure out how to store them
+// - Figure out rotations of faces
+// - Figure out how to keep track of colors of faces to know when solved
+
 
 "use strict";
 
@@ -39,6 +39,8 @@ var  angle = 0.0;
 var sensitivity = .5;
 
 var cBuffer, vColor, vBuffer, vPosition;
+
+var cachedMoves = [];
 
 function trackballView( x,  y ) {
     var d, a;
@@ -181,6 +183,15 @@ window.onload = function init()
         mouseMotion();
     });
 
+    document.getElementById( "xButton" ).onclick = function () {
+        cachedMoves.push("FC");
+        curFrameCount = 0;
+    };
+    document.getElementById( "yButton" ).onclick = function () {
+        cachedMoves.push("MC");
+        curFrameCount = 0;
+    };
+
     /*canvas.addEventListener( 'mousedown', moveMouseStart, false );
     canvas.addEventListener( 'mouseup', moveMouseStop, false );
     canvas.addEventListener( 'mouseout', moveMouseStop, false );
@@ -189,6 +200,10 @@ window.onload = function init()
 
     render();
 }
+
+var cubeNames = ["FTL","FTC","FTR","FML","FMC","FMR","FBL","FBC","FBR","MTL","MTC",
+"MTR","MML","MMC","MMR","MBL","MBC","MBR","BTL","BTC","BTR","BML","BMC","BMR","BBL",
+"BBC","BBR"]
 
 function colorCube()
 {   
@@ -203,10 +218,10 @@ function colorCube()
     generateSmallCube([0,0,5,0,7,0]); // front-bottom-center
     generateSmallCube([0,3,5,0,7,0]); // front-bottom-right
 
-    generateSmallCube([0,0,0,1,7,4]); // middle-top-left
-    generateSmallCube([0,0,0,1,7,0]); // middle-top-center
+    generateSmallCube([0,0,0,1,0,4]); // middle-top-left
+    generateSmallCube([0,0,0,1,0,0]); // middle-top-center
     generateSmallCube([0,3,0,1,0,0]); // middle-top-right
-    generateSmallCube([0,0,0,0,7,4]); // middle-middle-left
+    generateSmallCube([0,0,0,0,0,4]); // middle-middle-left
     generateSmallCube([0,0,0,0,0,0]); // middle-middle-center XXXXXX
     generateSmallCube([0,3,0,0,0,0]); // middle-middle-right
     generateSmallCube([0,0,5,0,0,4]); // middle-bottom-left
@@ -217,7 +232,7 @@ function colorCube()
     generateSmallCube([2,0,0,1,0,0]); // back-top-center
     generateSmallCube([2,3,0,1,0,0]); // back-top-right
     generateSmallCube([2,0,0,0,0,4]); // back-middle-left
-    generateSmallCube([2,0,0,0,0,0]); // back-middle-center XXXXXX
+    generateSmallCube([2,0,0,0,0,0]); // back-middle-center 
     generateSmallCube([2,3,0,0,0,0]); // back-middle-right
     generateSmallCube([2,0,5,0,0,4]); // back-bottom-left
     generateSmallCube([2,0,5,0,0,0]); // back-bottom-center
@@ -241,7 +256,7 @@ function generateSmallCube(colorVect){
     points = [];
     rubiksCubeColors.push(colors);
     colors = [];
-    console.log(rubiksCubePoints);
+    //console.log(rubiksCubePoints);
 }
 
 var size = 0.1;
@@ -341,6 +356,52 @@ var translations = [
     translate(dist,-dist,dist)
 ]
 
+var numFrames = 90;
+var curFrameCount = 0;
+function checkCache(model,i){
+    
+    var modelNew = model;
+    if(cachedMoves[0]){
+        switch(cachedMoves[0]){
+            case "FC":
+                if(i==cubeNames.indexOf("FTL") || i==cubeNames.indexOf("FTC") || i==cubeNames.indexOf("FTR") ||
+                    i==cubeNames.indexOf("FML") || i==cubeNames.indexOf("FMC") || i==cubeNames.indexOf("FMR") ||
+                    i==cubeNames.indexOf("FBL") || i==cubeNames.indexOf("FBC") || i==cubeNames.indexOf("FBR")){
+                    
+                    
+
+                    modelNew = mult(rotateZ(90/numFrames),modelNew);
+                    
+
+                }
+                else{
+                    modelNew = model;
+                }
+                break;
+            case "MC":
+                if(i==cubeNames.indexOf("MTL") || i==cubeNames.indexOf("MTC") || i==cubeNames.indexOf("MTR") ||
+                    i==cubeNames.indexOf("MML") || i==cubeNames.indexOf("MMC") || i==cubeNames.indexOf("MMR") ||
+                    i==cubeNames.indexOf("MBL") || i==cubeNames.indexOf("MBC") || i==cubeNames.indexOf("MBR")){
+                    modelNew = mult(model,translate(.1,0,0));
+                }
+                else{
+                    modelNew = model;
+                }
+                break;
+            default:
+                modelNew = model
+        }
+    }
+    else{
+        modelNew = model;
+    }
+    
+
+    return modelNew;
+}
+
+var trans = translations;
+
 function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -362,9 +423,14 @@ function render()
     //gl.uniformMatrix4fv(translationMatrixLoc,false,flatten(translationMatrixTrans));
     //console.log(translationMatrixTrans);
 
+
     for(var i=0;i<rubiksCubePoints.length;i++){
-        modelMatrixNew = mult(modelMatrix, translations[i]);//translate(0.1*i, 0.1*i, 0.1*i));
+        trans[i] = checkCache(trans[i],i);
+        modelMatrixNew = mult(modelMatrix, trans[i]);
+        modelMatrixNew = checkCache(modelMatrixNew);
         gl.uniformMatrix4fv(modelMatrixLoc, false, flatten(modelMatrixNew));
+
+        
 
         gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
         gl.bufferData( gl.ARRAY_BUFFER, flatten(rubiksCubeColors[i]), gl.STATIC_DRAW );
@@ -380,6 +446,12 @@ function render()
 
         gl.drawArrays( gl.TRIANGLES, 0, NumVertices);
     }
+
+    if(curFrameCount<numFrames-1){
+        curFrameCount+=1;
+    }
+    else if(cachedMoves[0]){cachedMoves.shift();}
+    
 
     
 
