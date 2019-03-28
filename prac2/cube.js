@@ -36,88 +36,46 @@ var startX, startY;
 var  axis = [0, 0, 1];
 var  angle = 0.0;
 
-var sensitivity = .5;
+var dragSensitivity = -50;
 
 var cBuffer, vColor, vBuffer, vPosition;
 
 var cachedMoves = [];
 
-function trackballView( x,  y ) {
-    var d, a;
-    var v = [];
+var AMORTIZATION = 0.95;
+var drag = false;
+var old_x, old_y;
+var dX = 0, dY = 0;
+var THETA = 0;
+var PHI = 0;
 
-    v[0] = x;
-    v[1] = y;
+var isMoving = false;
 
-    d = v[0]*v[0] + v[1]*v[1];
-    if (d < 1.0)
-      v[2] = Math.sqrt(1.0 - d);
-    else {
-      v[2] = 0.0;
-      a = 1.0 /  Math.sqrt(d);
-      v[0] *= a;
-      v[1] *= a;
+
+var mouseDown = function( e ) {
+    dragging = true;
+    oldX = e.pageX;
+    oldY = e.pageY;
+    e.preventDefault();
+    return false;
+};
+
+var mouseUp = function( e ) {
+    dragging = false;
+};
+
+var mouseMove = function( e ) {
+    if ( !dragging ) {
+        return false;
     }
-    return v;
-}
-
-function mouseMotion()
-{
-    var dx, dy, dz;
-
-    var x = 2*event.clientX/canvas.width-1;
-    var y = 2*(canvas.height-event.clientY)/canvas.height-1;
-
-    var curPos = trackballView(x, y);
-    if(trackingMouse) {
-      dx = curPos[0] - lastPos[0];
-      dy = curPos[1] - lastPos[1];
-      dz = curPos[2] - lastPos[2];
-
-      if (dx || dy || dz) {
-            angle = -1 * sensitivity * Math.sqrt(dx*dx + dy*dy + dz*dz);
-
-
-            axis[0] = lastPos[1]*curPos[2] - lastPos[2]*curPos[1];
-            axis[1] = lastPos[2]*curPos[0] - lastPos[0]*curPos[2];
-            axis[2] = lastPos[0]*curPos[1] - lastPos[1]*curPos[0];
-
-            lastPos[0] = curPos[0];
-            lastPos[1] = curPos[1];
-            lastPos[2] = curPos[2];
-      }
-    }
-    render();
-}
-
-function startMotion()
-{
-    var x = 2*event.clientX/canvas.width-1;
-    var y = 2*(canvas.height-event.clientY)/canvas.height-1;
-    trackingMouse = true;
-    startX = x;
-    startY = y;
-    curx = x;
-    cury = y;
-
-    lastPos = trackballView(x, y);
-	trackballMove=true;
-}
-
-function stopMotion()
-{
-    trackballMove = false;
-    var x = 2*event.clientX/canvas.width-1;
-    var y = 2*(canvas.height-event.clientY)/canvas.height-1;
-    trackingMouse = false;
-    if (startX != x || startY != y) {
-    }
-    else {
-	     angle = 0.0;
-	     trackballMove = false;
-    }
-}
-
+    dX = ( e.pageX - oldX ) * 2 * Math.PI / canvas.width;
+    dY = ( e.pageY - oldY ) * 2 * Math.PI / canvas.height;
+    theta -= dX;
+    phi -= dY;
+    oldX = e.pageX;
+    oldY = e.pageY;
+    e.preventDefault();
+};
 
 
 window.onload = function init()
@@ -171,25 +129,20 @@ window.onload = function init()
 
     //event listeners for buttons
 
-    canvas.addEventListener("mousedown", function(event){
-        startMotion();
-    });
-  
-    canvas.addEventListener("mouseup", function(event){
-        stopMotion();
-    });
-
-    canvas.addEventListener("mousemove", function(event){
-        mouseMotion();
-    });
+    canvas.addEventListener("mousedown", mouseDown, false);
+    canvas.addEventListener("mouseup", mouseUp, false);
+    canvas.addEventListener("mouseout", mouseUp, false);
+    canvas.addEventListener("mousemove", mouseMove, false);
 
     document.getElementById( "xButton" ).onclick = function () {
-        cachedMoves.push("FC");
-        curFrameCount = 0;
+        if(!isMoving){
+            cachedMoves.push("FC");
+        }
+        //if(!isMoving){curFrameCount=0;}
+        //curFrameCount=0;
     };
     document.getElementById( "yButton" ).onclick = function () {
         cachedMoves.push("MC");
-        curFrameCount = 0;
     };
 
     /*canvas.addEventListener( 'mousedown', moveMouseStart, false );
@@ -368,11 +321,7 @@ function checkCache(model,i){
                     i==cubeNames.indexOf("FML") || i==cubeNames.indexOf("FMC") || i==cubeNames.indexOf("FMR") ||
                     i==cubeNames.indexOf("FBL") || i==cubeNames.indexOf("FBC") || i==cubeNames.indexOf("FBR")){
                     
-                    
-
                     modelNew = mult(rotateZ(90/numFrames),modelNew);
-                    
-
                 }
                 else{
                     modelNew = model;
@@ -402,6 +351,31 @@ function checkCache(model,i){
 
 var trans = translations;
 
+function moveCube(){
+    var sensitivity = -50;
+
+    modelMatrix = mat4();
+    var c = Math.cos( radians( dragSensitivity * phi ) );
+    var s = Math.sin( radians( dragSensitivity * phi ) );
+    var mv1 = modelMatrix[0][1], mv5 = modelMatrix[1][1], mv9 = modelMatrix[2][1];
+    modelMatrix[0][1] = modelMatrix[0][1] * c - modelMatrix[0][2] * s;
+    modelMatrix[1][1] = modelMatrix[1][1] * c - modelMatrix[1][2] * s;
+    modelMatrix[2][1] = modelMatrix[2][1] * c - modelMatrix[2][2] * s;
+    modelMatrix[0][2] = modelMatrix[0][2] * c + mv1 * s;
+    modelMatrix[1][2] = modelMatrix[1][2] * c + mv5 * s;
+    modelMatrix[2][2] = modelMatrix[2][2] * c + mv9 * s;
+    c = Math.cos( radians( dragSensitivity * theta ) );
+    s = Math.sin( radians( dragSensitivity * theta ) );
+    var mv0 = modelMatrix[0][0], mv4 = modelMatrix[1][0], mv8 = modelMatrix[2][0];
+    modelMatrix[0][0] = modelMatrix[0][0] * c + modelMatrix[0][2] * s;
+    modelMatrix[1][0] = modelMatrix[1][0] * c + modelMatrix[1][2] * s;
+    modelMatrix[2][0] = modelMatrix[2][0] * c + modelMatrix[2][2] * s;
+    modelMatrix[0][2] = modelMatrix[0][2] * c - mv0 * s;
+    modelMatrix[1][2] = modelMatrix[1][2] * c - mv4 * s;
+    modelMatrix[2][2] = modelMatrix[2][2] * c - mv8 * s;
+
+}
+
 function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -409,11 +383,13 @@ function render()
     //gl.uniform3fv(thetaLoc, theta);
 
 
-    if(trackballMove) {
+    /*if(trackballMove) {
         axis = normalize(axis);
         projectionMatrix = mult(projectionMatrix, rotate(angle, axis));
         gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix));
-    }
+    }*/
+    
+    moveCube();
 
     //modelMatrixNew = mult(modelMatrix, translate(0.1, 0.1, 0.1));
     //gl.uniformMatrix4fv(modelMatrixLoc, false, flatten(modelMatrixNew));
@@ -447,10 +423,20 @@ function render()
         gl.drawArrays( gl.TRIANGLES, 0, NumVertices);
     }
 
-    if(curFrameCount<numFrames-1){
+    if(curFrameCount<numFrames-1 && cachedMoves[0]){
+        console.log(curFrameCount);
         curFrameCount+=1;
+        isMoving = true;
     }
-    else if(cachedMoves[0]){cachedMoves.shift();}
+    else if(cachedMoves[0]){
+        cachedMoves.shift();
+        curFrameCount=0;
+        isMoving = true;
+    }
+    else if(!cachedMoves[0]){
+        isMoving = false;
+    }
+
     
 
     
