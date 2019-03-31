@@ -1,4 +1,5 @@
 // TODO
+// Doing: Changing values of buttons for intuitiveness
 // - Work on loading and saving the cube
 
 
@@ -578,7 +579,8 @@ var numFrames = 9;
 var curFrameCount = 0;
 var cubeCount=0;
 
-
+var middleColors = ["Gray","Blue","Yellow","Green","Red","Magenta"]
+//                  [front,left,back,right,top,bottom]
 
 function checkCache(model,i){
     
@@ -909,6 +911,7 @@ function checkCache(model,i){
                 }
                 break;
 
+            
             case "MC1":
                 if(i==cubeNames.indexOf("FML") || i==cubeNames.indexOf("FMC") || i==cubeNames.indexOf("FMR") ||
                     i==cubeNames.indexOf("MML") || i==cubeNames.indexOf("MMC") || i==cubeNames.indexOf("MMR") ||
@@ -925,6 +928,13 @@ function checkCache(model,i){
                         }
                         
                         for(var ii=0;ii<times;ii++){
+                            var t0 = middleColors[0];
+                            middleColors[0] = middleColors[1];
+                            middleColors[1] = middleColors[2];
+                            middleColors[2] = middleColors[3];
+                            middleColors[3] = t0;
+                            
+
                             var FML = cubeNames.indexOf("FML"); 
                             var FMC = cubeNames.indexOf("FMC");
                             var FMR = cubeNames.indexOf("FMR");
@@ -962,7 +972,7 @@ function checkCache(model,i){
                     modelNew = model;
                 }
                 break;
-
+                
             case "MC2":
                 if(i==cubeNames.indexOf("FTC") || i==cubeNames.indexOf("FMC") || i==cubeNames.indexOf("FBC") ||
                     i==cubeNames.indexOf("MTC") || i==cubeNames.indexOf("MMC") || i==cubeNames.indexOf("MBC") ||
@@ -979,6 +989,12 @@ function checkCache(model,i){
                         }
                         
                         for(var ii=0;ii<times;ii++){
+                            var t4 = middleColors[4];
+                            middleColors[4] = middleColors[2];
+                            middleColors[2] = middleColors[5];
+                            middleColors[5] = middleColors[0];
+                            middleColors[0] = t4;
+
                             var FTC = cubeNames.indexOf("FTC"); 
                             var FMC = cubeNames.indexOf("FMC");
                             var FBC = cubeNames.indexOf("FBC");
@@ -1016,7 +1032,6 @@ function checkCache(model,i){
                     modelNew = model;
                 }
                 break;
-
             case "MC3":
                 if(i==cubeNames.indexOf("MTL") || i==cubeNames.indexOf("MTC") || i==cubeNames.indexOf("MTR") ||
                     i==cubeNames.indexOf("MML") || i==cubeNames.indexOf("MMC") || i==cubeNames.indexOf("MMR") ||
@@ -1033,6 +1048,12 @@ function checkCache(model,i){
                         }
                         
                         for(var ii=0;ii<times;ii++){
+                            var t4 = middleColors[4];
+                            middleColors[4] = middleColors[1];
+                            middleColors[1] = middleColors[5];
+                            middleColors[5] = middleColors[3];
+                            middleColors[3] = t4;
+
                             var MTL = cubeNames.indexOf("MTL"); 
                             var MTC = cubeNames.indexOf("MTC");
                             var MTR = cubeNames.indexOf("MTR");
@@ -1202,6 +1223,7 @@ function render()
 
         gl.drawArrays( gl.TRIANGLES, 0, NumVertices);
     }
+    //var middleColors = ["Gray","Blue","Yellow","Green","Red","Magenta"]
 
     if(curFrameCount<numFrames-1 && cachedMoves[0]){
         //console.log(curFrameCount);
@@ -1213,6 +1235,26 @@ function render()
         cachedDirs.shift();
         curFrameCount=0;
         isMoving = true;
+
+        document.getElementById("Red Center").innerHTML = "<strong>"+middleColors[4]+"</strong>"+" center C (q)";
+        document.getElementById("Yellow Center").innerHTML = "<strong>"+middleColors[2]+"</strong>"+" center C (w)";
+        document.getElementById("Blue Center").innerHTML = "<strong>"+middleColors[1]+"</strong>"+" center C (e)";
+        document.getElementById("Gray Center").innerHTML = "<strong>"+middleColors[0]+"</strong>"+" center C (r)";
+        document.getElementById("Green Center").innerHTML = "<strong>"+middleColors[3]+"</strong>"+" center C (t)";
+        document.getElementById("Magenta Center").innerHTML = "<strong>"+middleColors[5]+"</strong>"+" center C (y)";
+        document.getElementById("Middle1").innerHTML = "<strong>"+"["+middleColors[3]+", "+middleColors[2]+", "+middleColors[1]+", "+middleColors[0]+"]"+"</strong>"+" center C (u)";
+        document.getElementById("Middle2").innerHTML = "<strong>"+"["+middleColors[2]+", "+middleColors[4]+", "+middleColors[0]+", "+middleColors[5]+"]"+"</strong>"+" center C (i)";
+        document.getElementById("Middle3").innerHTML = "<strong>"+"["+middleColors[3]+", "+middleColors[4]+", "+middleColors[1]+", "+middleColors[5]+"]"+"</strong>"+" center C (o)";
+    
+        document.getElementById("Red Center CC").innerHTML = "<strong>"+middleColors[4]+"</strong>"+" center CC (a)";
+        document.getElementById("Yellow Center CC").innerHTML = "<strong>"+middleColors[2]+"</strong>"+" center CC (s)";
+        document.getElementById("Blue Center CC").innerHTML = "<strong>"+middleColors[1]+"</strong>"+" center CC (d)";
+        document.getElementById("Gray Center CC").innerHTML = "<strong>"+middleColors[0]+"</strong>"+" center CC (f)";
+        document.getElementById("Green Center CC").innerHTML = "<strong>"+middleColors[3]+"</strong>"+" center CC (g)";
+        document.getElementById("Magenta Center CC").innerHTML = "<strong>"+middleColors[5]+"</strong>"+" center CC (h)";
+        document.getElementById("Middle1 CC").innerHTML = "<strong>"+"["+middleColors[3]+", "+middleColors[2]+", "+middleColors[1]+", "+middleColors[0]+"]"+"</strong>"+" center CC (j)";
+        document.getElementById("Middle2 CC").innerHTML = "<strong>"+"["+middleColors[2]+", "+middleColors[4]+", "+middleColors[0]+", "+middleColors[5]+"]"+"</strong>"+" center CC (k)";
+        document.getElementById("Middle3 CC").innerHTML = "<strong>"+"["+middleColors[3]+", "+middleColors[4]+", "+middleColors[1]+", "+middleColors[5]+"]"+"</strong>"+" center CC (l)";
         if(!cachedMoves[0]){checkIfSolved();}
         
     }
