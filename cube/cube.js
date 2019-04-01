@@ -148,6 +148,14 @@ window.onload = function init()
         console.log("Loading...");
         var file = document.getElementById("loadFile").files[0];
         //var fullPath = file["RelativePath"]+file["name"];
+
+        for(var ii=savedMoves.length-1;ii>=0;ii--){
+            cachedMoves.push(savedMoves[ii]);
+            cachedDirs.push(savedDirs[ii]*-1);
+        }
+        savedMoves = [];
+        savedDirs = [];
+
         
         var fr = new FileReader();
         fr.onload = function( e ) {
@@ -1281,11 +1289,6 @@ function checkIfSolved(){
     window.confirm("Solved!");
 }
 
-function loadFile(){
-    
-   
-
-}
 
 function render()
 {
