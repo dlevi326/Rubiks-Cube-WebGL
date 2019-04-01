@@ -1,5 +1,4 @@
 // TODO
-// Doing: Changing values of buttons for intuitiveness
 // - Work on loading and saving the cube
 
 
@@ -51,6 +50,9 @@ var THETA = 0;
 var PHI = 0;
 
 var isMoving = false;
+
+var savedMoves = [];
+var savedDirs = [];
 
 
 var mouseDown = function( e ) {
@@ -144,11 +146,44 @@ window.onload = function init()
     };
     document.getElementById("load").onclick = function(){
         console.log("Loading...");
-        loadFile();
+        var file = document.getElementById("loadFile").files[0];
+        //var fullPath = file["RelativePath"]+file["name"];
+        
+        var fr = new FileReader();
+        fr.onload = function( e ) {
+            var data = JSON.parse( e.target.result );
+            for(var i=0;i<data["moves"].length;i++){
+                cachedMoves.push(data["moves"][i]);
+                cachedDirs.push(data["dirs"][i]);
+                savedMoves.push(data["moves"][i]);
+                savedDirs.push(data["dirs"][i]);
+            }
+            
+        };
+        fr.readAsText(file);
     };
     document.getElementById("save").onclick = function(){
         console.log("Saving...");
-        console.log(origTrans);
+        
+        var data = {
+            moves: savedMoves,
+            dirs: savedDirs
+        }
+
+        var dataStr = JSON.stringify(data);
+
+        var pom = document.createElement('a');
+        pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(dataStr));
+        pom.setAttribute('download', "cube.json");
+
+        if (document.createEvent) {
+            var event = document.createEvent('MouseEvents');
+            event.initEvent('click', true, true);
+            pom.dispatchEvent(event);
+        }
+        else {
+            pom.click();
+        }
     };
 
 
@@ -156,54 +191,72 @@ window.onload = function init()
         if(!isMoving){
             cachedDirs.push(1);
             cachedMoves.push("TC");
+            savedMoves.push("TC");
+            savedDirs.push(1);
         }
     };
     document.getElementById("Yellow Center").onclick = function(){
         if(!isMoving){
             cachedDirs.push(1);
             cachedMoves.push("BC");
+            savedMoves.push("BC");
+            savedDirs.push(1);
         }
     };
     document.getElementById("Blue Center").onclick = function(){
         if(!isMoving){
             cachedDirs.push(1);
             cachedMoves.push("LC");
+            savedMoves.push("LC");
+            savedDirs.push(1);
         }
     };
     document.getElementById("Gray Center").onclick = function(){
         if(!isMoving){
             cachedDirs.push(1);
             cachedMoves.push("FC");
+            savedMoves.push("FC");
+            savedDirs.push(1);
         }
     };
     document.getElementById("Green Center").onclick = function(){
         if(!isMoving){
             cachedDirs.push(1);
             cachedMoves.push("RC");
+            savedMoves.push("RC");
+            savedDirs.push(1);
         }
     };
     document.getElementById("Magenta Center").onclick = function(){
         if(!isMoving){
             cachedDirs.push(1);
             cachedMoves.push("BotC");
+            savedMoves.push("BotC");
+            savedDirs.push(1);
         }
     };
     document.getElementById("Middle1").onclick = function(){
         if(!isMoving){
             cachedDirs.push(1);
             cachedMoves.push("MC1");
+            savedMoves.push("MC1");
+            savedDirs.push(1);
         }
     };
     document.getElementById("Middle2").onclick = function(){
         if(!isMoving){
             cachedDirs.push(1);
             cachedMoves.push("MC2");
+            savedMoves.push("MC2");
+            savedDirs.push(1);
         }
     };
     document.getElementById("Middle3").onclick = function(){
         if(!isMoving){
             cachedDirs.push(1);
             cachedMoves.push("MC3");
+            savedMoves.push("MC3");
+            savedDirs.push(1);
         }
     };
 
@@ -211,54 +264,72 @@ window.onload = function init()
         if(!isMoving){
             cachedDirs.push(-1);
             cachedMoves.push("TC");
+            savedMoves.push("TC");
+            savedDirs.push(-1);
         }
     };
     document.getElementById("Yellow Center CC").onclick = function(){
         if(!isMoving){
             cachedDirs.push(-1);
             cachedMoves.push("BC");
+            savedMoves.push("BC");
+            savedDirs.push(-1);
         }
     };
     document.getElementById("Blue Center CC").onclick = function(){
         if(!isMoving){
             cachedDirs.push(-1);
             cachedMoves.push("LC");
+            savedMoves.push("LC");
+            savedDirs.push(-1);
         }
     };
     document.getElementById("Gray Center CC").onclick = function(){
         if(!isMoving){
             cachedDirs.push(-1);
             cachedMoves.push("FC");
+            savedMoves.push("FC");
+            savedDirs.push(-1);
         }
     };
     document.getElementById("Green Center CC").onclick = function(){
         if(!isMoving){
             cachedDirs.push(-1);
             cachedMoves.push("RC");
+            savedMoves.push("RC");
+            savedDirs.push(-1);
         }
     };
     document.getElementById("Magenta Center CC").onclick = function(){
         if(!isMoving){
             cachedDirs.push(-1);
             cachedMoves.push("BotC");
+            savedMoves.push("BotC");
+            savedDirs.push(-1);
         }
     };
     document.getElementById("Middle1 CC").onclick = function(){
         if(!isMoving){
             cachedDirs.push(-1);
             cachedMoves.push("MC1");
+            savedMoves.push("MC1");
+            savedDirs.push(-1);
         }
     };
     document.getElementById("Middle2 CC").onclick = function(){
         if(!isMoving){
             cachedDirs.push(-1);
             cachedMoves.push("MC2");
+            savedMoves.push("MC2");
+            savedDirs.push(-1);
         }
     };
     document.getElementById("Middle3 CC").onclick = function(){
         if(!isMoving){
             cachedDirs.push(-1);
             cachedMoves.push("MC3");
+            savedMoves.push("MC3");
+            savedDirs.push(-1);
         }
     };
 
@@ -268,108 +339,144 @@ window.onload = function init()
                 if(!isMoving){
                     cachedDirs.push(1);
                     cachedMoves.push("TC");
+                    savedMoves.push("TC");
+                    savedDirs.push(1);
                 }
                 break;
             case "w":
                 if(!isMoving){
                     cachedDirs.push(1);
                     cachedMoves.push("BC");
+                    savedMoves.push("BC");
+                    savedDirs.push(1);
                 }
                 break;
             case "e":
                 if(!isMoving){
                     cachedDirs.push(1);
                     cachedMoves.push("LC");
+                    savedMoves.push("LC");
+                    savedDirs.push(1);
                 }
                 break;
             case "r":
                 if(!isMoving){
                     cachedDirs.push(1);
                     cachedMoves.push("FC");
+                    savedMoves.push("FC");
+                    savedDirs.push(1);
                 }
                 break;
             case "t":
                 if(!isMoving){
                     cachedDirs.push(1);
                     cachedMoves.push("RC");
+                    savedMoves.push("RC");
+                    savedDirs.push(1);
                 }
                 break;
             case "y":
                 if(!isMoving){
                     cachedDirs.push(1);
                     cachedMoves.push("BotC");
+                    savedMoves.push("BotC");
+                    savedDirs.push(1);
                 }
                 break;
             case "u":
                 if(!isMoving){
                     cachedDirs.push(1);
                     cachedMoves.push("MC1");
+                    savedMoves.push("MC1");
+                    savedDirs.push(1);
                 }
                 break;
             case "i":
                 if(!isMoving){
                     cachedDirs.push(1);
                     cachedMoves.push("MC2");
+                    savedMoves.push("MC2");
+                    savedDirs.push(1);
                 }
                 break;
             case "o":
                 if(!isMoving){
                     cachedDirs.push(1);
                     cachedMoves.push("MC3");
+                    savedMoves.push("MC3");
+                    savedDirs.push(1);
                 }
                 break;
             case "a":
                 if(!isMoving){
                     cachedDirs.push(-1);
                     cachedMoves.push("TC");
+                    savedMoves.push("TC");
+                    savedDirs.push(-1);
                 }
                 break;
             case "s":
                 if(!isMoving){
                     cachedDirs.push(-1);
                     cachedMoves.push("BC");
+                    savedMoves.push("BC");
+                    savedDirs.push(-1);
                 }
                 break;
             case "d":
                 if(!isMoving){
                     cachedDirs.push(-1);
                     cachedMoves.push("LC");
+                    savedMoves.push("LC");
+                    savedDirs.push(-1);
                 }
                 break;
             case "f":
                 if(!isMoving){
                     cachedDirs.push(-1);
                     cachedMoves.push("FC");
+                    savedMoves.push("FC");
+                    savedDirs.push(-1);
                 }
                 break;
             case "g":
                 if(!isMoving){
                     cachedDirs.push(-1);
                     cachedMoves.push("RC");
+                    savedMoves.push("RC");
+                    savedDirs.push(-1);
                 }
                 break;
             case "h":
                 if(!isMoving){
                     cachedDirs.push(-1);
                     cachedMoves.push("BotC");
+                    savedMoves.push("BotC");
+                    savedDirs.push(-1);
                 }
                 break;
             case "j":
                 if(!isMoving){
                     cachedDirs.push(-1);
                     cachedMoves.push("MC1");
+                    savedMoves.push("MC1");
+                    savedDirs.push(-1);
                 }
                 break;
             case "k":
                 if(!isMoving){
                     cachedDirs.push(-1);
                     cachedMoves.push("MC2");
+                    savedMoves.push("MC2");
+                    savedDirs.push(-1);
                 }
                 break;
             case "l":
                 if(!isMoving){
                     cachedDirs.push(-1);
                     cachedMoves.push("MC3");
+                    savedMoves.push("MC3");
+                    savedDirs.push(-1);
                 }
                 break;
 
@@ -393,6 +500,8 @@ function randomlyPermute(num){
         var ind2 = Math.floor(Math.random() * 2); // 0-1
         cachedMoves.push(moves[ind1]);
         cachedDirs.push(dirs[ind2]);
+        savedMoves.push(moves[ind1]);
+        savedDirs.push(dirs[ind2]);
     }
 }
 
@@ -1182,24 +1291,8 @@ function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    //gl.uniform3fv(thetaLoc, theta);
-
-
-    /*if(trackballMove) {
-        axis = normalize(axis);
-        projectionMatrix = mult(projectionMatrix, rotate(angle, axis));
-        gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix));
-    }*/
     
     moveCube();
-
-    //modelMatrixNew = mult(modelMatrix, translate(0.1, 0.1, 0.1));
-    //gl.uniformMatrix4fv(modelMatrixLoc, false, flatten(modelMatrixNew));
-
-    //rotationMatrix = mult(rotationMatrix, rotate(angle,axis));
-    //var translationMatrixTrans = mult(translationMatrix,translate(.65, .65, .65));
-    //gl.uniformMatrix4fv(translationMatrixLoc,false,flatten(translationMatrixTrans));
-    //console.log(translationMatrixTrans);
 
 
     for(var i=0;i<rubiksCubePoints.length;i++){
