@@ -157,9 +157,13 @@ window.onload = function init()
         savedDirs = [];
 
         
+
+        
         var fr = new FileReader();
         fr.onload = function( e ) {
             var data = JSON.parse( e.target.result );
+            phi = parseFloat(data["phiSet"]);
+            theta = parseFloat(data["thetaSet"]);
             for(var i=0;i<data["moves"].length;i++){
                 cachedMoves.push(data["moves"][i]);
                 cachedDirs.push(data["dirs"][i]);
@@ -175,14 +179,16 @@ window.onload = function init()
         
         var data = {
             moves: savedMoves,
-            dirs: savedDirs
+            dirs: savedDirs,
+            phiSet: phi,
+            thetaSet: theta
         }
 
         var dataStr = JSON.stringify(data);
 
         var pom = document.createElement('a');
         pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(dataStr));
-        pom.setAttribute('download', "cube.json");
+        pom.setAttribute('download', "cube.txt");
 
         if (document.createEvent) {
             var event = document.createEvent('MouseEvents');
@@ -1320,7 +1326,8 @@ function render()
         gl.drawArrays( gl.TRIANGLES, 0, NumVertices);
     }
     //var middleColors = ["Gray","Blue","Yellow","Green","Red","Magenta"]
-
+    //console.log("theta "+theta);
+    //console.log("phi "+phi);
     if(curFrameCount<numFrames-1 && cachedMoves[0]){
         //console.log(curFrameCount);
         curFrameCount+=1;
