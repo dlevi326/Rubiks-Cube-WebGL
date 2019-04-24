@@ -1282,14 +1282,83 @@ var orig = ["FTL","FTC","FTR","FML","FMC","FMR","FBL","FBC","FBR","MTL","MTC",
     "MTR","MML","MMC","MMR","MBL","MBC","MBR","BTL","BTC","BTR","BML","BMC","BMR","BBL",
     "BBC","BBR"];
 
+var fbSolve;
+ 
+
 function checkIfSolved(){
 
-    if(orig.length !== cubeNames.length)
+    console.log(cubeNames);
+
+    var check1 = cubeNames.indexOf("FTL");
+    if(check1+1<cubeNames.length && check1+2<cubeNames.length){
+        if(cubeNames[check1+1]!="FTC" || cubeNames[check1+2]!="FTR"){
+            return;
+        }
+    }
+
+    var check2 = cubeNames.indexOf("FML");
+    if(check2+1<cubeNames.length && check2+2<cubeNames.length){
+        if(cubeNames[check2+1]!="FMC" || cubeNames[check2+2]!="FMR"){
+            return;
+        }
+    }
+
+    var check3= cubeNames.indexOf("FBL");
+    if(check3+1<cubeNames.length && check3+2<cubeNames.length){
+        if(cubeNames[check3+1]!="FBC" || cubeNames[check3+2]!="FBR"){
+            return;
+        }
+    }
+
+    var check4 = cubeNames.indexOf("MTL");
+    if(check4+1<cubeNames.length && check4+2<cubeNames.length){
+        if(cubeNames[check4+1]!="MTC" || cubeNames[check4+2]!="MTR"){
+            return;
+        }
+    }
+
+    var check5 = cubeNames.indexOf("MML");
+    if(check5+1<cubeNames.length && check5+2<cubeNames.length){
+        if(cubeNames[check5+1]!="MMC" || cubeNames[check5+2]!="MMR"){
+            return;
+        }
+    }
+
+    var check6 = cubeNames.indexOf("MBL");
+    if(check6+1<cubeNames.length && check6+2<cubeNames.length){
+        if(cubeNames[check6+1]!="MBC" || cubeNames[check6+2]!="MBR"){
+            return;
+        }
+    }
+
+    var check7 = cubeNames.indexOf("BTL");
+    if(check7+1<cubeNames.length && check7+2<cubeNames.length){
+        if(cubeNames[check7+1]!="BTC" || cubeNames[check7+2]!="BTR"){
+            return;
+        }
+    }
+
+    var check8 = cubeNames.indexOf("BML");
+    if(check8+1<cubeNames.length && check8+2<cubeNames.length){
+        if(cubeNames[check8+1]!="BMC" || cubeNames[check8+2]!="BMR"){
+            return;
+        }
+    }
+
+    var check9 = cubeNames.indexOf("BBL");
+    if(check9+1<cubeNames.length && check9+2<cubeNames.length){
+        if(cubeNames[check9+1]!="BBC" || cubeNames[check9+2]!="BBR"){
+            return;
+        }
+    }
+    
+
+    /*if(orig.length !== cubeNames.length)
         return;
     for(var i = orig.length; i--;) {
         if(orig[i] !== cubeNames[i])
             return;
-    }
+    }*/
     cachedMoves = [];
     cachedDirs = [];
     window.confirm("Solved!");
